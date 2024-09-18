@@ -4,12 +4,18 @@ const fs = require('fs');
 const https = require('https');
 const path = require('path');
 const helmet = require('helmet');
+const cors = require('cors');
 
 const app = express();
 const APP_PORT = process.env.APP_PORT || 3000;
 
 // Use Helmet for security
-app.use(helmet());
+app.use(helmet()); // Must learn what can do.
+
+// Allow requests from http://localhost:5173
+app.use(cors({
+    origin: 'http://localhost:5173'
+}));
 
 app.use(express.json());
 

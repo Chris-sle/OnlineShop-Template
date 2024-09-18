@@ -1,0 +1,7 @@
+body, html {
+    height: 100%;
+    margin: 0;
+}
+.content {
+    min-height: calc(100vh - 120px); /* Adjust height minus header and footer height */
+}
