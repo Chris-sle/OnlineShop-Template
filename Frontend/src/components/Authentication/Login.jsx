@@ -4,23 +4,36 @@ import { fetchWithToken } from '../../services/fetchWithToken';
 
 const Login = () => {
     const { login } = useContext(AuthContext);
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [userEmail, setEmail] = useState('');
+    const [userPassword, setPassword] = useState('');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const  data = await fetchWithToken('/auth/login', 'POST', {email, password})
+            const data = await fetchWithToken('/users/login', 'POST', { userEmail, userPassword });
             login(data.token); // Store the token using the context function
-        } catch {
-            console.error('Login failed:', error);
+            console.log('Login successful 🟢');
+        } catch (error) {
+            console.error('Login failed:', error.message);
         }
     };
 
     return (
         <form onSubmit={handleSubmit}>
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            <input
+                type="email"
+                value={userEmail}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                placeholder="Email"
+            />
+            <input
+                type="password"
+                value={userPassword}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                placeholder="Password"
+            />
             <button type="submit">Log In</button>
         </form>
     );

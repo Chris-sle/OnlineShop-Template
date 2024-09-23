@@ -10,7 +10,10 @@ export const fetchWithToken = async (url, method = "GET", data = null) =>{
             method,
             url: `https://localhost:3000${url}`,
             data,
-            headers,
+            headers: {
+                'Content-Type': 'application/json',
+                ...headers // Include authorization headers if available
+            },
         });
 
         return response.data;

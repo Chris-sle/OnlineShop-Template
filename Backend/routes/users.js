@@ -19,21 +19,22 @@ router.post('/register', async (req, res, next) => {
         const hashedPassword = await bcrypt.hash(userPassword, salt);
         const createdAt = new Date();
 
-        db.query('INSERT INTO users (user_id, user_email, user_password, role_id, createdAt) VALUES (?, ?, ?, (SELECT role_id FROM roles WHERE role_name="customer"), ?)',
-            [userId, userEmail, hashedPassword, createdAt], (err) => {
-                if (err) throw err;
-                res.status(201).json({ message: 'User registered successfully' });
-        });
+        await db.query(
+            'INSERT INTO users (user_id, user_email, user_password, role_id, createdAt) VALUES (?, ?, ?, (SELECT role_id FROM roles WHERE role_name="customer"), ?)',
+            [userId, userEmail, hashedPassword, createdAt]
+        );
+
+        res.status(201).json({ message: 'User registered successfully' });
     } catch (error) {
         next(error);
     }
 });
 
-router.post('/login', (req, res, next) => {
+router.post('/login', async (req, res, next) => {
     const { userEmail, userPassword } = req.body;
 
-    db.query('SELECT * FROM users WHERE user_email = ?', [userEmail], async (err, users) => {
-        if (err) return next(err);
+    try {
+        const [users] = await db.query('SELECT * FROM users WHERE user_email = ?', [userEmail]);
 
         if (users.length === 0) return res.status(400).json({ message: 'Incorrect email or password' });
 
@@ -47,23 +48,34 @@ router.post('/login', (req, res, next) => {
         } else {
             res.status(400).json({ message: 'Incorrect email or password' });
         }
-    });
+    } catch (err) {
+        next(err);
+    }
 });
 
-router.get('/', (req, res, next) => {
-    db.query('SELECT * FROM users', (err, results) => {
-        if (err) return next(err);
+router.get('/', async (req, res, next) => {
+    try {
+        const [results] = await db.query('SELECT * FROM users');
         res.json(results);
-    });
+    } catch (err) {
+        next(err);
+    }
 });
 
-router.get('/:id', (req, res, next) => {
+router.get('/:id', async (req, res, next) => {
     const userId = req.params.id;
-    db.query('SELECT * FROM users WHERE user_id = ?', [userId], (err, results) => {
-        if (err) return next(err);
-        if (results.length === 0) return res.status(404).json({ message: 'User not found' });
+
+    try {
+        const [results] = await db.query('SELECT * FROM users WHERE user_id = ?', [userId]);
+
+        if (results.length === 0) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
         res.json(results[0]);
-    });
+    } catch (err) {
+        next(err);
+    }
 });
 
 module.exports = router;

@@ -21,7 +21,7 @@ const ProductCard = (prop) => {
     )
 };
 
-ProductCard.PropTypes = {
+ProductCard.propTypes = {
     productImgURL: PropTypes.string,
     productName: PropTypes.string,
     productPrice: PropTypes.number,

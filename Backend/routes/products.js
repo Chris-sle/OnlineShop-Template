@@ -3,11 +3,13 @@ const db = require('../config/db.js');
 
 const router = express.Router();
 
-router.get('/all', (req, res, next) => {
-    db.query('SELECT * FROM products', (err, results) => {
-        if (err) return next(err);
+router.get('/all', async (req, res) => {
+    try {
+        const [results] = await db.query('SELECT * FROM products');
         res.json(results);
-    });
+    } catch (err) {
+        res.status(500).json({ error: err.mesage });
+    }
 });
 
 

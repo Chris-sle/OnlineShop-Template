@@ -15,16 +15,24 @@ exports.verifyToken = (req, res, next) => {
     });
 };
 
-exports.checkAdmin = (req, res, next) => {
-    const userId = req.user.id;
+exports.checkAdmin = async (req, res, next) => {
+    try {
+        const [results] = await db.query(
+            'SELECT role_name FROM roles WHERE role_id = (SELECT role_id FROM users WHERE user_id=?)',
+            [req.user.id]
+        );
 
-    db.query('SELECT role_name FROM roles WHERE role_id = (SELECT role_id FROM users WHERE user_id = ?)', [userId], (err, results) => {
-        if (err || results.length === 0) return res.status(500).json({ message: 'Database error' });
+        if (results.length === 0) {
+            return res.status(500).json({ message: 'Database error' });
+        }
 
         if (results[0].role_name === 'admin') {
             next();
         } else {
             res.status(403).json({ message: 'Forbidden: Admins only' });
         }
-    });
+    } catch (err) {
+        console.error(err.stack);
+        res.status(500).json({ message: 'Something went wrong!', error: err.message });
+    }
 };
