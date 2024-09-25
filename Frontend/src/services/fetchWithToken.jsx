@@ -3,7 +3,10 @@ import Cookies from 'js-cookie'
 
 export const fetchWithToken = async (url, method = "GET", data = null) =>{
     const token = Cookies.get('token');
-    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    const headers = {
+        'Content-Type': 'application/json',
+        ...(token && { Authorization: `Bearer ${token}` }) // Ensure token is used
+    };
 
     try {
         const response = await axios({
@@ -15,7 +18,7 @@ export const fetchWithToken = async (url, method = "GET", data = null) =>{
                 ...headers // Include authorization headers if available
             },
         });
-
+        console.log(response.data)
         return response.data;
     } catch (error) {
         console.error('API error:', error);

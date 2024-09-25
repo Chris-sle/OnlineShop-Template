@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
 const db = require('../config/db.js');
+const { verifyToken } = require('../middleware/authentication.js');
 
 const router = express.Router();
 
@@ -62,8 +63,8 @@ router.get('/', async (req, res, next) => {
     }
 });
 
-router.get('/:id', async (req, res, next) => {
-    const userId = req.params.id;
+router.get('/me', verifyToken, async (req, res, next) => {
+    const userId = req.userId;
 
     try {
         const [results] = await db.query('SELECT * FROM users WHERE user_id = ?', [userId]);

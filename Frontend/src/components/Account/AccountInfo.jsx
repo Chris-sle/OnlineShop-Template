@@ -1,15 +1,36 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { fetchWithToken } from '../../services/fetchWithToken';
 
 const AccountInfo = () => {
-    return(
-        <div>
+    const [userInfo, setUserInfo] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchUserInfo = async () => {
+            try {
+                const data = await fetchWithToken('/users/me', 'GET');
+                setUserInfo(data);
+            } catch (error) {
+                setError('Failed to fetch user information.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchUserInfo();
+    }, []);
+
+    if (loading) return <p>Loading account information ...</p>;
+    if (error) return <p>{error}</p>;
+
+    return (
+        <div className='container'>
             <div>
-                <img src="" alt="" />
-            </div>
-            <div>
-                <h3></h3>
-                <p></p>
-                <p></p>
+                <h1>Account Information</h1>
+                <p>Email: {userInfo.user_email}</p>
+                
+                {/* Display other account-related info as needed */}
             </div>
         </div>
     )

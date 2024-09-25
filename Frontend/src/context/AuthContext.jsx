@@ -23,6 +23,8 @@ export const AuthProvider = ({ children }) => {
     const logout = () => {
         setToken(null);
         Cookies.remove('token');
+        setUserId(null); // Make sure to also clear the userId
+        Cookies.remove('userId');
     };
 
     return (
