@@ -1,10 +1,11 @@
 import React from 'react';
+import UserList from '../components/Admin/UserList.jsx'
 
 const AdminPage = () => {
 
     return (
         <div>
-            AdminPage!
+            <UserList />
         </div>
     );
 };

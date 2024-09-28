@@ -11,6 +11,7 @@ const Login = () => {
         e.preventDefault();
         try {
             const data = await fetchWithToken('/users/login', 'POST', { userEmail, userPassword });
+            console.log(data.token)
             login(data.token); // Store the token using the context function
             console.log('Login successful 🟢');
         } catch (error) {

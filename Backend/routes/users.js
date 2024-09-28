@@ -35,7 +35,13 @@ router.post('/login', async (req, res, next) => {
     const { userEmail, userPassword } = req.body;
 
     try {
-        const [users] = await db.query('SELECT * FROM users WHERE user_email = ?', [userEmail]);
+        const [users] = await db.query(
+            `SELECT users.*, roles.role_name 
+            FROM users 
+            JOIN roles ON users.role_id = roles.role_id 
+            WHERE users.user_email = ?`, 
+            [userEmail]
+        );
 
         if (users.length === 0) return res.status(400).json({ message: 'Incorrect email or password' });
 
@@ -43,7 +49,7 @@ router.post('/login', async (req, res, next) => {
         const match = await bcrypt.compare(userPassword, user.user_password);
 
         if (match) {
-            const tokenPayload = { id: user.user_id, email: user.user_email };
+            const tokenPayload = { id: user.user_id, email: user.user_email, role: user.role_name };
             const token = jwt.sign(tokenPayload, process.env.JWT_SECRET, { expiresIn: '1h' });
             res.json({ token });
         } else {
@@ -54,14 +60,7 @@ router.post('/login', async (req, res, next) => {
     }
 });
 
-router.get('/', async (req, res, next) => {
-    try {
-        const [results] = await db.query('SELECT * FROM users');
-        res.json(results);
-    } catch (err) {
-        next(err);
-    }
-});
+
 
 router.get('/me', verifyToken, async (req, res, next) => {
     const userId = req.userId;
