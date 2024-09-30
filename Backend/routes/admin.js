@@ -1,18 +1,11 @@
 const express = require('express');
 const { verifyToken, checkAdmin } = require('../middleware/authentication.js');
+const db = require('../config/db.js');
 const { query } = require('../config/db.js');
 
 const router = express.Router();
 
-router.get('/test', verifyToken, checkAdmin, async (req, res, next) => {
-    try {
-        res.send('This is an admin-only route');        
-    } catch (error) {
-        next(error);
-    }
-});
-
-// User controls for admin.
+// View all users.
 router.get('/users', verifyToken, checkAdmin, async (req, res, next) => {
     try {
         const [users] = await db.query(`
@@ -22,11 +15,12 @@ router.get('/users', verifyToken, checkAdmin, async (req, res, next) => {
         `);
         res.json(users);
     } catch (error) {
-        next(error);
+        next(error); // Pass errors to the error handler
     }
-});
+}); 
 
-router.put('/users/:id/role', verifyToken, checkAdmin, async (rec, res, next) => {
+// Change user role
+router.put('/users/:id/role', verifyToken, checkAdmin, async (req, res, next) => {
     const { id } = req.params;
     const { newRole } = req.body;
 
@@ -38,10 +32,11 @@ router.put('/users/:id/role', verifyToken, checkAdmin, async (rec, res, next) =>
         res.json({ message: 'User role updated successfully' });
 
     } catch (error) {
-        next(error);
+        next(error); // Pass errors to the error handler
     }
 });
 
+// Delete user
 router.delete('/users/:id', verifyToken, checkAdmin, async (req, res, next) => {
     const { id } = req.params;
 
@@ -50,11 +45,9 @@ router.delete('/users/:id', verifyToken, checkAdmin, async (req, res, next) => {
         res.json({ message: 'User removed successfully'});
 
     } catch (error) {
-        next(error);
+        next(error); // Pass errors to the error handler
     }
 })
-
-
 
 // Export module
 module.exports = router;

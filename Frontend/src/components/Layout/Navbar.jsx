@@ -5,6 +5,8 @@ import { AuthContext } from '../../context/AuthContext';
 const Navbar = () => {
     const { userRole } = useContext(AuthContext); 
 
+    console.log('Role in Navbar:', userRole);
+
     return (
         <nav className="navbar navbar-expand navbar-dark bg-dark">
             <div className="container">
@@ -22,6 +24,11 @@ const Navbar = () => {
                     {userRole === 'admin' && (
                         <li className='nav-item'>
                             <Link to="/admin" className="nav-link">Admin</Link>
+                        </li>
+                    )}
+                    {userRole === 'seller' || userRole === 'admin' && (
+                        <li className='nav-item'>
+                            <Link to="/seller" className='nav-link'>Seller</Link>
                         </li>
                     )}
                 </ul>

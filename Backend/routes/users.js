@@ -21,15 +21,21 @@ router.post('/register', async (req, res, next) => {
         const createdAt = new Date();
 
         await db.query(
-            'INSERT INTO users (user_id, user_email, user_password, role_id, createdAt) VALUES (?, ?, ?, (SELECT role_id FROM roles WHERE role_name="customer"), ?)',
+            'INSERT INTO users (user_id, user_email, user_password, role_id, createdAt) VALUES (?, ?, ?, (SELECT role_id FROM roles WHERE role_name="guest"), ?)',
             [userId, userEmail, hashedPassword, createdAt]
         );
 
-        res.status(201).json({ message: 'User registered successfully' });
+        // Generate a token payload
+        const tokenPayload = { id: userId, email: userEmail, role: 'guest' }; // Set the role as guest for new users
+        const token = jwt.sign(tokenPayload, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+        // Respond with a success message and token
+        res.status(201).json({ message: 'User registered successfully', token });
     } catch (error) {
         next(error);
     }
 });
+
 
 router.post('/login', async (req, res, next) => {
     const { userEmail, userPassword } = req.body;
@@ -39,7 +45,7 @@ router.post('/login', async (req, res, next) => {
             `SELECT users.*, roles.role_name 
             FROM users 
             JOIN roles ON users.role_id = roles.role_id 
-            WHERE users.user_email = ?`, 
+            WHERE users.user_email = ?`,
             [userEmail]
         );
 
@@ -59,8 +65,6 @@ router.post('/login', async (req, res, next) => {
         next(err);
     }
 });
-
-
 
 router.get('/me', verifyToken, async (req, res, next) => {
     const userId = req.userId;

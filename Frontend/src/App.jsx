@@ -7,6 +7,7 @@ import HomePage from './pages/HomePage.jsx';
 import ProductsPage from './pages/ProductsPage.jsx';
 import AccountPage from './pages/AccountPage.jsx';
 import AdminPage from './pages/AdminPage.jsx';
+import SellerPage from './pages/SellerPage.jsx';
 import { AuthProvider } from './context/AuthContext';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './app.css';
@@ -15,7 +16,6 @@ function App() {
   return (
     <AuthProvider>
       <Router>
-        
           <Header />
           <Navbar />
           <Routes>
@@ -23,9 +23,9 @@ function App() {
             <Route path="/products" element={<ProductsPage />} />
             <Route path="/Account" element={<AccountPage />} />
             <Route path="/admin" element={<AdminPage />} />
+            <Route path="/seller" element={<SellerPage />} />
           </Routes>
           <Footer />
-        
       </Router>
     </AuthProvider>
   );

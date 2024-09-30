@@ -16,12 +16,18 @@ export const AuthProvider = ({ children }) => {
         // Check cookies for an existing token on mount
         const storedToken = Cookies.get('token');
         if (storedToken) {
-            setToken(storedToken);
-            const decodedToken = jwtDecode(storedToken);
-            console.log(decodedToken.role)
-            setUserId(decodedToken.id);
-            setUserEmail(decodedToken.email);
-            setUserRole(decodedToken.role);
+            try {
+                setToken(storedToken);
+                const decodedToken = jwtDecode(storedToken);
+                setUserId(decodedToken.id); 
+                setUserEmail(decodedToken.email);
+                setUserRole(decodedToken.role);
+                console.log('Role at mount:', decodedToken.role);
+            } catch (error) {
+                console.error('Token decoding failed:', error.message);
+                // Handle the error (e.g. remove the invalid token from cookies)
+                Cookies.remove('token');
+            }
         }
     }, []);
 
@@ -33,7 +39,7 @@ export const AuthProvider = ({ children }) => {
         setUserId(decodedToken.id);
         setUserEmail(decodedToken.email)
         setUserRole(decodedToken.role);
-        console.log(decodedToken);
+        console.log('Decoded Token on login:', decodedToken);
     };
 
     const logout = () => {
@@ -45,7 +51,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ token, login, logout }}>
+        <AuthContext.Provider value={{ token, userRole, login, logout }}>
             {children}
         </AuthContext.Provider> 
     );

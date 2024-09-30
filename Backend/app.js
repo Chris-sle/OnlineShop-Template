@@ -23,11 +23,13 @@ app.use(express.json());
 const userRoutes = require('./routes/users');
 const productRoutes = require('./routes/products');
 const adminRoutes = require('./routes/admin');
+const sellerRoutes = require('./routes/seller');
 
 // Use routes
 app.use('/users', userRoutes);
 app.use('/products', productRoutes);
 app.use('/admin', adminRoutes);
+app.use('/seller', sellerRoutes);
 
 // Error handling middleware
 const errorHandler = require('./middleware/errorHandler');

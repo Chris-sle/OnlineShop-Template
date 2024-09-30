@@ -20,7 +20,7 @@ exports.checkAdmin = async (req, res, next) => {
     try {
         const [results] = await db.query(
             'SELECT role_name FROM roles WHERE role_id = (SELECT role_id FROM users WHERE user_id=?)',
-            [req.user.id]
+            [req.userId]
         );
 
         if (results.length === 0) {
