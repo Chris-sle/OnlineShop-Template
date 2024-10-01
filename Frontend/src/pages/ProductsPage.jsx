@@ -4,7 +4,7 @@ import ProductList from '../components/Products/ProductList.jsx'
 const ProductsPage = () => {
 
     return (
-        <div>
+        <div className='container'>
             <ProductList />
         </div>
     );

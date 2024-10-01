@@ -102,8 +102,8 @@ INSERT INTO users (user_id, user_email, user_password, role_id, CreatedAt, updat
 
 -- products --
 INSERT INTO products (product_id, seller_id, product_name, product_description, product_price, product_ImgUrl, createdAt, updatedAt) VALUES
-(UUID(), (SELECT user_id FROM users WHERE user_email='seller@example.com'), 'Product 1', 'Description of Product 1', 19.99, 'http://example.com/img1.jpg', NOW(), NOW()),
-(UUID(), (SELECT user_id FROM users WHERE user_email='seller@example.com'), 'Product 2', 'Description of Product 2', 29.99, 'http://example.com/img2.jpg', NOW(), NOW());
+(UUID(), (SELECT user_id FROM users WHERE user_email='seller@example.com'), 'Product 1', 'Description of Product 1', 19.99, 'https://placehold.co/200x200/EEE/31343C?font=montserrat&text=Product', NOW(), NOW()),
+(UUID(), (SELECT user_id FROM users WHERE user_email='seller@example.com'), 'Product 2', 'Description of Product 2', 29.99, 'https://placehold.co/200x200/EEE/31343C?font=montserrat&text=Product', NOW(), NOW());
 
 -- transactions --
 INSERT INTO transactions (transaction_id, costumer_id, total_amount, current_status, createdAt) VALUES

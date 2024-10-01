@@ -19,19 +19,21 @@ const ProductList = () => {
     }, []);
 
     return (
-        <div className="container">
-            <h1>Product List</h1>
-            <ul>
-                {products.map(product => (
-                    <div className="col-md-4" key={product.product_id}>
-                        <ProductCard 
-                            productImgURL={product.product_ImgUrl} // Ensure correct property name
-                            productName={product.product_name} 
-                            productPrice={product.product_price}
-                        />
-                    </div>
-                ))}
-            </ul>
+        <div className="container bg-dark-subtle">
+            <h1 className='h1 text-center'>Product List</h1>
+            <div className="row">
+                
+                    {products.map(product => (
+                        <div className="col col-4" key={product.product_id}>
+                            <ProductCard
+                                productImgURL={product.product_ImgUrl} // Ensure correct property name
+                                productName={product.product_name}
+                                productPrice={product.product_price}
+                            />
+                        </div>
+                    ))}
+                
+            </div>
         </div>
     );
 };
