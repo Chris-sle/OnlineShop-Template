@@ -10,7 +10,7 @@ const SellerPage = () => {
     };
 
     return (
-        <div className='container d-flex justify-content-center'>
+        <main className='container d-flex justify-content-center'>
             <div className='row '>
                 <h1>Seller Dashboard</h1>
             </div>
@@ -18,7 +18,7 @@ const SellerPage = () => {
             <ProductList />
             <AddProduct onProductAdded={handleProductAdded} />
             </div>
-        </div>
+        </main>
     );
 };
 

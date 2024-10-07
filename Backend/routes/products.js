@@ -14,6 +14,16 @@ router.get('/all', async (req, res, next) => {
     }
 });
 
+router.get('/:productId', async (req, res, next) => {
+    const { productId } = req.params;
+    try {
+        const [product] = await db.query('SELECT * FROM products WHERE product_id = ?', [productId])
+        res.json(product)
+    } catch (error) {
+        next(error)
+    }
+});
+
 // show reviews for product
 router.get('/:productId/reviews', async (req, res, next) => {
     const { productId } = req.params;

@@ -1,30 +1,27 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 
-const ProductCard = (prop) => {
+const ProductCard = ({ product }) => {
+    
 
     return (
-        <div className="card">
-            <img src={prop.productImgURL} alt="Product image" className='card-img-top' />
+        <div className="card h-100">
+            <img src={product.product_ImgUrl} alt={product.product_name} className='card-img-top' />
             <div className='card-body'>
-
-                <p className='card-title'>{prop.productName}</p>
-
-
-                <p className='card-text'>Price: {prop.productPrice}$</p>
-                <div className='container'>
-                    <a href="#" className='btn btn-primary'>Product Page</a>
-                    <button className='btn btn-primary'>Add to cart</button>
+                <h5 className="card-title">{product.product_name}</h5>
+                <p className="card-text">{product.product_description}</p>
+                <p className='card-text font-weight-bold'>Price: {product.product_price}$</p>
+                <div className='container justify-content-center'>
+                    <Link to={`/product/${product.product_id}`} className="btn btn-primary">
+                        View Product
+                    </Link>
+                    <button className='btn btn-primary bg-danger-subtle'>
+                        Add to cart
+                    </button>
                 </div>
             </div>
         </div>
     )
-};
-
-ProductCard.propTypes = {
-    productImgURL: PropTypes.string,
-    productName: PropTypes.string,
-    productPrice: PropTypes.string,
 };
 
 export default ProductCard;

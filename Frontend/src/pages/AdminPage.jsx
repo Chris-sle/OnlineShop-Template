@@ -4,9 +4,9 @@ import UserList from '../components/Admin/UserList.jsx'
 const AdminPage = () => {
 
     return (
-        <div>
+        <main>
             <UserList />
-        </div>
+        </main>
     );
 };
 

@@ -9,7 +9,7 @@ const AccountPage = () => {
     const { token } = useContext(AuthContext);
 
     return (
-        <div className='container d-flex justify-content-center align-items-center text-center'>
+        <main className='container d-flex justify-content-center align-items-center text-center'>
             {token ? (
                 <div>
                     <AccountInfo />
@@ -27,7 +27,7 @@ const AccountPage = () => {
                     </div>
                 </div>
             )}
-        </div>
+        </main>
     );
 };
 
