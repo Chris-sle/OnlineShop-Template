@@ -3,6 +3,7 @@ import { AuthContext } from '../context/AuthContext.jsx';
 import Login from '../components/Authentication/Login.jsx';
 import Register from '../components/Authentication/Register.jsx';
 import AccountInfo from '../components/Account/AccountInfo.jsx';
+import UserReviews from '../components/Account/UserReviews.jsx';
 import LogoutButton from '../components/Authentication/LogoutButton.jsx';
 
 const AccountPage = () => {
@@ -13,6 +14,7 @@ const AccountPage = () => {
             {token ? (
                 <div>
                     <AccountInfo />
+                    <UserReviews />
                     <LogoutButton />
                 </div>
             ) : (

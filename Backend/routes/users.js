@@ -7,6 +7,7 @@ const { verifyToken } = require('../middleware/authentication.js');
 
 const router = express.Router();
 
+// Register new user
 router.post('/register', async (req, res, next) => {
     const { userEmail, userPassword } = req.body;
 
@@ -36,7 +37,7 @@ router.post('/register', async (req, res, next) => {
     }
 });
 
-
+// login with existing user
 router.post('/login', async (req, res, next) => {
     const { userEmail, userPassword } = req.body;
 
@@ -66,11 +67,17 @@ router.post('/login', async (req, res, next) => {
     }
 });
 
-router.get('/me', verifyToken, async (req, res, next) => {
+// Get user data
+router.get('/userinfo', verifyToken, async (req, res, next) => {
     const userId = req.userId;
 
     try {
-        const [results] = await db.query('SELECT * FROM users WHERE user_id = ?', [userId]);
+        const [results] = await db.query(`
+            SELECT users.*, userInfo.name, userInfo.date_of_birth, userAddresses.address, userAddresses.city, userAddresses.state, userAddresses.zipCode, userAddresses.country 
+            FROM users 
+            LEFT JOIN userInfo ON users.user_id = userInfo.user_id 
+            LEFT JOIN userAddresses ON users.user_id = userAddresses.user_id 
+            WHERE users.user_id = ?`, [userId]);
 
         if (results.length === 0) {
             return res.status(404).json({ message: 'User not found' });
@@ -79,6 +86,55 @@ router.get('/me', verifyToken, async (req, res, next) => {
         res.json(results[0]);
     } catch (err) {
         next(err);
+    }
+});
+
+// Edit user data
+router.put('/userinfo', verifyToken, async (req, res, next) => {
+    const userId = req.userId;
+    const { name, date_of_birth, address, city, zipCode, country } = req.body; // Destructure fields
+
+    try {
+        // Insert or update userInfo
+        const userInfoId = uuidv4(); // Generate a new UUID for user info
+        await db.query(`
+            INSERT INTO userInfo (user_id, user_info_id, name, date_of_birth) 
+            VALUES (?, ?, ?, ?)
+            ON DUPLICATE KEY UPDATE name = ?, date_of_birth = ?`,
+            [userId, userInfoId, name, date_of_birth, name, date_of_birth]
+        );
+
+        // Update address information in userAddresses table
+        const userAddressId = uuidv4(); 
+        await db.query(`
+            INSERT INTO userAddresses (user_id, user_address_id, address, city, zipCode, country)
+            VALUES (?, ?, ?, ?, ?, ?)
+            ON DUPLICATE KEY UPDATE address = ?, city = ?, zipCode = ?, country = ?`,
+            [userId, userAddressId, address, city, zipCode, country, address, city, zipCode, country]
+        );
+
+        res.json({ message: 'User information updated successfully' });
+    } catch (error) {
+        next(error); // Pass errors to the error handler
+    }
+});
+
+// Get user's reviews
+router.get('/reviews', verifyToken, async (req, res, next) => {
+    const userId = req.userId;
+
+    try {
+        const [reviews] = await db.query(`
+            SELECT reviews.review_id, reviews.rating, reviews.comment, reviews.createdAt, products.product_name
+            FROM reviews
+            JOIN products ON reviews.product_id = products.product_id
+            WHERE reviews.user_id = ?`, 
+            [userId]
+        );
+
+        res.json(reviews);
+    } catch (error) {
+        next(error); // Pass errors to the error handler
     }
 });
 

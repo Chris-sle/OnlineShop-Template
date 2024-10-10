@@ -1,7 +1,6 @@
 const express = require('express');
 const { verifyToken, checkAdmin } = require('../middleware/authentication.js');
 const db = require('../config/db.js');
-const { query } = require('../config/db.js');
 
 const router = express.Router();
 

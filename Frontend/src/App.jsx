@@ -16,7 +16,6 @@ function App() {
   return (
     <AuthProvider>
       <Router>
-          
           <Navbar />
           <Routes>
             <Route path="/" element={<HomePage />} />

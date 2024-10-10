@@ -9,7 +9,7 @@ const ProductCategories = () => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const data = await publicFetch({ URL: '/categories/all', method: 'GET' });
+                const data = await publicFetch({ URL: '/categories/', method: 'GET' });
                 setCategories(data);
             } catch (error) {
                 setError('Failed to fetch categories.');

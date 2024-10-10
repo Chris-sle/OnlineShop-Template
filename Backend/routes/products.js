@@ -1,6 +1,7 @@
 const express = require('express');
 const db = require('../config/db.js');
 const { verifyToken } = require('../middleware/authentication.js');
+
 const router = express.Router();
 
 // Public

@@ -47,6 +47,14 @@ CREATE TABLE transactionItems (
     FOREIGN KEY (product_id) REFERENCES products(product_id)
 );
 
+CREATE TABLE userInfo (
+    user_info_id CHAR(36) UNIQUE PRIMARY KEY,
+    user_id CHAR(36) UNIQUE,
+    name VARCHAR(100) NOT NULL,
+    date_of_birth DATE,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
 CREATE TABLE userAddresses (
 	user_address_id CHAR(36) UNIQUE PRIMARY KEY,
     user_id CHAR(36),

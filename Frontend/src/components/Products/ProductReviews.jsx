@@ -1,9 +1,7 @@
-import react, { useEffect, useState } from 'react';
-import { publicFetch } from '../../services/PublicFetch';
+import React from 'react';
 
 const ProductReviews = ({ reviews }) => {
     
-
     return (
         <div className="container mt-4">
             <h3 className="h3">Reviews</h3>
@@ -24,4 +22,4 @@ const ProductReviews = ({ reviews }) => {
     )
 };
 
-export default ProductReviews
+export default ProductReviews;

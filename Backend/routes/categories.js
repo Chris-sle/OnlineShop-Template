@@ -3,7 +3,7 @@ const db = require('../config/db.js');
 
 const router = express.Router();
 
-router.get('/all', async (req, res, next) => {
+router.get('/', async (req, res, next) => {
     try {
         const [categories] = await db.query('SELECT category_id, category_name FROM categories');
         res.json(categories);

@@ -12,7 +12,7 @@ const ProductsPage = () => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const data = await publicFetch({ URL: '/categories/all', method: 'GET' });
+                const data = await publicFetch({ URL: '/categories/', method: 'GET' });
                 
                 // Check data integrity
                 if (data.length > 0) {
