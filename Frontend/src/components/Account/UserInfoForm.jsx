@@ -1,23 +1,37 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
-const UserInfoForm = ({
-    name,
-    setName,
-    dateOfBirth,
-    setDateOfBirth,
-    address,
-    setAddress,
-    city,
-    setCity,
-    zipCode,
-    setZipCode,
-    country,
-    setCountry,
-    handleEditSubmit,
-    userInfo
-}) => {
+const UserInfoForm = ({ userInfo, handleEditSubmit }) => {
+    const [name, setName] = useState(userInfo.name || '');
+    const [dateOfBirth, setDateOfBirth] = useState(userInfo.date_of_birth ? userInfo.date_of_birth.split('T')[0] : '');
+    const [address, setAddress] = useState(userInfo.address || '');
+    const [city, setCity] = useState(userInfo.city || '');
+    const [zipCode, setZipCode] = useState(userInfo.zipCode || '');
+    const [country, setCountry] = useState(userInfo.country || '');
+
+    useEffect(() => {
+        // Update fields if userInfo changes (optional)
+        setName(userInfo.name || '');
+        setDateOfBirth(userInfo.date_of_birth ? userInfo.date_of_birth.split('T')[0] : '');
+        setAddress(userInfo.address || '');
+        setCity(userInfo.city || '');
+        setZipCode(userInfo.zipCode || '');
+        setCountry(userInfo.country || '');
+    }, [userInfo]);
+
+    const handleFormSubmit = (e) => {
+        e.preventDefault(); // Prevent page refresh on form submit
+        handleEditSubmit({ // Pass updated data back to AccountPage
+            name,
+            date_of_birth: dateOfBirth,
+            address,
+            city,
+            zipCode,
+            country,
+        });
+    };
+
     return (
-        <form onSubmit={handleEditSubmit} className='form'>
+        <form onSubmit={handleFormSubmit} className='form'>
             <div className='mb-3'>
                 <label className='form-label'>Name</label>
                 <input
@@ -25,7 +39,7 @@ const UserInfoForm = ({
                     className='form-control'
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder={userInfo.name || 'Enter your name'}
+                    placeholder='Enter your name'
                     required
                 />
             </div>
@@ -46,7 +60,7 @@ const UserInfoForm = ({
                     className='form-control'
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
-                    placeholder={userInfo.address || 'Enter your address'}
+                    placeholder='Enter your address'
                     required
                 />
             </div>
@@ -57,7 +71,7 @@ const UserInfoForm = ({
                     className='form-control'
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
-                    placeholder={userInfo.city || 'Enter your city'}
+                    placeholder='Enter your city'
                     required
                 />
             </div>
@@ -68,7 +82,7 @@ const UserInfoForm = ({
                     className='form-control'
                     value={zipCode}
                     onChange={(e) => setZipCode(e.target.value)}
-                    placeholder={userInfo.zipCode || 'Enter your zip code'}
+                    placeholder='Enter your zip code'
                     required
                 />
             </div>
@@ -79,7 +93,7 @@ const UserInfoForm = ({
                     className='form-control'
                     value={country}
                     onChange={(e) => setCountry(e.target.value)}
-                    placeholder={userInfo.country || 'Enter your country'}
+                    placeholder='Enter your country'
                     required
                 />
             </div>

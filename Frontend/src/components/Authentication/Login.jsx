@@ -1,22 +1,12 @@
-import React, { useContext, useState } from 'react';
-import { AuthContext } from '../../context/AuthContext';
-import { fetchWithToken } from '../../services/fetchWithToken';
+import React, { useState } from 'react';
 
-const Login = () => {
-    const { login } = useContext(AuthContext);
+const Login = ({ onLogin }) => {
     const [userEmail, setEmail] = useState('');
     const [userPassword, setPassword] = useState('');
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
-        try {
-            const data = await fetchWithToken('/users/login', 'POST', { userEmail, userPassword });
-            console.log(data.token)
-            login(data.token); // Store the token using the context function
-            console.log('Login successful 🟢');
-        } catch (error) {
-            console.error('Login failed:', error.message);
-        }
+        onLogin(userEmail, userPassword); // Call the onLogin function passed from LoginPage
     };
 
     return (
@@ -24,7 +14,7 @@ const Login = () => {
             <form onSubmit={handleSubmit}>
                 <div className='form-float'>
                     <input
-                        className='form-control' 
+                        className='form-control'
                         type="email"
                         value={userEmail}
                         onChange={(e) => setEmail(e.target.value)}
@@ -32,7 +22,7 @@ const Login = () => {
                         placeholder="Email"
                     />
                     <input
-                        className='form-control' 
+                        className='form-control'
                         type="password"
                         value={userPassword}
                         onChange={(e) => setPassword(e.target.value)}

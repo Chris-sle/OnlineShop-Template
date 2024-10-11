@@ -1,6 +1,7 @@
 const express = require('express');
 const { verifyToken, checkAdmin } = require('../middleware/authentication.js');
 const db = require('../config/db.js');
+const { v4: uuidv4 } = require('uuid'); 
 
 const router = express.Router();
 
@@ -16,7 +17,7 @@ router.get('/users', verifyToken, checkAdmin, async (req, res, next) => {
     } catch (error) {
         next(error); // Pass errors to the error handler
     }
-}); 
+});
 
 // Change user role
 router.put('/users/:id/role', verifyToken, checkAdmin, async (req, res, next) => {
@@ -41,12 +42,45 @@ router.delete('/users/:id', verifyToken, checkAdmin, async (req, res, next) => {
 
     try {
         await db.query('DELETE FROM users WHERE user_id = ?', [id]);
-        res.json({ message: 'User removed successfully'});
+        res.json({ message: 'User removed successfully' });
 
     } catch (error) {
         next(error); // Pass errors to the error handler
     }
 })
+
+// Add a category
+router.post('/categories', verifyToken, checkAdmin, async (req, res, next) => {
+    const { categoryName } = req.body;
+
+    if (!categoryName) {
+        return res.status(400).json({ message: 'Category name is required' });
+    }
+
+    try {
+        const categoryId = uuidv4(); // Generate a new UUID for the category
+        await db.query('INSERT INTO categories (category_id, category_name) VALUES (?, ?)', [categoryId, categoryName]);
+        res.status(201).json({ message: 'Category added successfully' });
+    } catch (error) {
+        if (error.code === 'ER_DUP_ENTRY') {
+            res.status(409).json({ message: 'Category name already exists' });
+        } else {
+            next(error); // Pass errors to the error handler
+        }
+    }
+});
+
+// Delete a category
+router.delete('/categories/:categoryId', verifyToken, checkAdmin, async (req, res, next) => {
+    const { categoryId } = req.params;
+
+    try {
+        await db.query('DELETE FROM categories WHERE category_id = ?', [categoryId]);
+        res.json({ message: 'Category removed successfully' });
+    } catch (error) {
+        next(error); // Pass errors to the error handler
+    }
+});
 
 // Export module
 module.exports = router;

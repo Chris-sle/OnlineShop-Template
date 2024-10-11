@@ -95,25 +95,45 @@ router.put('/userinfo', verifyToken, async (req, res, next) => {
     const { name, date_of_birth, address, city, zipCode, country } = req.body; // Destructure fields
 
     try {
-        // Insert or update userInfo
-        const userInfoId = uuidv4(); // Generate a new UUID for user info
-        await db.query(`
-            INSERT INTO userInfo (user_id, user_info_id, name, date_of_birth) 
-            VALUES (?, ?, ?, ?)
-            ON DUPLICATE KEY UPDATE name = ?, date_of_birth = ?`,
-            [userId, userInfoId, name, date_of_birth, name, date_of_birth]
-        );
+        // Check if userInfo exists
+        const [existingUserInfo] = await db.query('SELECT * FROM userInfo WHERE user_id = ?', [userId]);
 
-        // Update address information in userAddresses table
-        const userAddressId = uuidv4(); 
-        await db.query(`
-            INSERT INTO userAddresses (user_id, user_address_id, address, city, zipCode, country)
-            VALUES (?, ?, ?, ?, ?, ?)
-            ON DUPLICATE KEY UPDATE address = ?, city = ?, zipCode = ?, country = ?`,
-            [userId, userAddressId, address, city, zipCode, country, address, city, zipCode, country]
-        );
+        if (existingUserInfo.length === 0) {
+            // Insert with a new UUID if no entry exists
+            const userInfoId = uuidv4();
+            await db.query(`
+                INSERT INTO userInfo (user_info_id, user_id, name, date_of_birth) 
+                VALUES (?, ?, ?, ?)`,
+                [userInfoId, userId, name || '', date_of_birth]
+            );
+        } else {
+            // Update the existing entry
+            await db.query(`
+                UPDATE userInfo SET name = ?, date_of_birth = ? WHERE user_id = ?`,
+                [name, date_of_birth, userId]
+            );
+        }
 
-        res.json({ message: 'User information updated successfully' });
+        // Check if userAddresses exists
+        const [existingUserAddress] = await db.query('SELECT * FROM userAddresses WHERE user_id = ?', [userId]);
+
+        if (existingUserAddress.length === 0) {
+            // Insert with a new UUID if no entry exists
+            const userAddressId = uuidv4();
+            await db.query(`
+                INSERT INTO userAddresses (user_address_id, user_id, address, city, zipCode, country)
+                VALUES (?, ?, ?, ?, ?, ?)`,
+                [userAddressId, userId, address || '', city || '', zipCode || '', country || '']
+            );
+        } else {
+            // Update the existing entry
+            await db.query(`
+                UPDATE userAddresses SET address = ?, city = ?, zipCode = ?, country = ? WHERE user_id = ?`,
+                [address, city, zipCode, country, userId]
+            );
+        }
+
+        res.json({ message: 'User information updated successfully' }); // Send a success response
     } catch (error) {
         next(error); // Pass errors to the error handler
     }
@@ -128,7 +148,7 @@ router.get('/reviews', verifyToken, async (req, res, next) => {
             SELECT reviews.review_id, reviews.rating, reviews.comment, reviews.createdAt, products.product_name
             FROM reviews
             JOIN products ON reviews.product_id = products.product_id
-            WHERE reviews.user_id = ?`, 
+            WHERE reviews.user_id = ?`,
             [userId]
         );
 

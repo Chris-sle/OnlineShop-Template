@@ -27,8 +27,8 @@ router.post('/products', verifyToken, checkSellerOrAdmin, async (req, res, next)
     const { product_name, product_description, product_price, product_ImgUrl, category_id } = req.body;
 
     try {
+        // Generate new IDs for the product and its category
         const productId = uuidv4();
-        const productCategory_id = uuidv4();
 
         // Insert into products table
         await db.query(
@@ -36,17 +36,33 @@ router.post('/products', verifyToken, checkSellerOrAdmin, async (req, res, next)
             [productId, userId, product_name, product_description, product_price, product_ImgUrl]
         );
 
-        // Insert into productCategories table
-        await db.query(
-            'INSERT INTO productCategories (productCategory_id, product_id, category_id) VALUES (?, ?, ?)',
-            [productCategory_id, productId, category_id]
-        );
+        // Insert into productCategories table (only if category_id is valid)
+        if (category_id) {
+            const productCategoryId = uuidv4();
+            await db.query(
+                'INSERT INTO productCategories (productCategory_id, product_id, category_id) VALUES (?, ?, ?)',
+                [productCategoryId, productId, category_id]
+            );
+        }
 
-        res.json({ message: 'Product added successfully', productId }); // Return the generated productId
+        // Response includes complete product information
+        res.json({
+            message: 'Product added successfully',
+            product: {
+                product_id: productId,
+                seller_id: userId,
+                product_name,
+                product_description,
+                product_price,
+                product_ImgUrl,
+                category_id
+            }
+        });
     } catch (error) {
         next(error); // Pass errors to the error handler
     }
 });
+
 
 // Edit existing product
 router.put('/products/:id', verifyToken, checkSellerOrAdmin, async (req, res, next) => {
@@ -109,11 +125,11 @@ router.put('/products/:id/category', verifyToken, checkSellerOrAdmin, async (req
 //Remove a product
 router.delete('/products/:id', verifyToken, checkSellerOrAdmin, async (req, res, next) => {
     const { id } = req.params;
-    
+
     try {
         // First, delete the associations in productCategories
         await db.query('DELETE FROM productCategories WHERE product_id = ?', [id]);
-        
+
         // Then delete the product itself
         const [result] = await db.query('DELETE FROM products WHERE product_id = ? AND seller_id = ?', [id, req.userId]);
 

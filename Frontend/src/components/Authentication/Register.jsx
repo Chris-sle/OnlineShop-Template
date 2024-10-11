@@ -1,28 +1,16 @@
-import React, { useContext, useState } from 'react';
-import { AuthContext } from '../../context/AuthContext';
+import React, { useState } from 'react';
 import { publicFetch } from '../../services/PublicFetch'; // Ensure you're using publicFetch
 
-const Register = () => {
-    const { login } = useContext(AuthContext);
+const Register = ({ onRegister }) => {
     const [userEmail, setEmail] = useState('');
     const [userPassword, setPassword] = useState('');
-    const [message, setMessage] = useState(null);
+    const [message, setMessage] = useState('');
 
-    const handleRegister = async (e) => {
+    const handleRegister = (e) => {
         e.preventDefault();
-        try {
-            const response = await publicFetch({ URL: '/users/register', method: 'POST', data: { userEmail, userPassword } });
-            const { token } = response; // Assuming the response contains a token
-            if (token) {
-                login(token); // Log in the user with the new token
-                setMessage('User registered successfully.');
-            } else {
-                setMessage('Registration successful, but no token returned.');
-            }
-        } catch (error) {
-            console.error('Registration failed:', error.message);
-            setMessage('Registration failed. Please try again.');
-        }
+        // Call the onRegister function passed from LoginPage
+        onRegister(userEmail, userPassword);
+        // Add some regex rules.
     };
 
     return (
@@ -30,7 +18,7 @@ const Register = () => {
             <form onSubmit={handleRegister}>
                 <div className='form-float'>
                     <input
-                        className='form-control' 
+                        className='form-control'
                         type="email"
                         value={userEmail}
                         onChange={(e) => setEmail(e.target.value)}
@@ -38,7 +26,7 @@ const Register = () => {
                         placeholder="Email"
                     />
                     <input
-                        className='form-control' 
+                        className='form-control'
                         type="password"
                         value={userPassword}
                         onChange={(e) => setPassword(e.target.value)}
@@ -47,7 +35,7 @@ const Register = () => {
                     />
                 </div>
                 <button className="btn btn-primary" type="submit">Register</button>
-                {message && <p className='p'>{message}</p>}
+                {message && <p className='text-danger'>{message}</p>} {/* Error message display */}
             </form>
         </div>
     );

@@ -40,56 +40,57 @@ const ProductCard = ({ product, categories, onProductRemoved, onProductCategoryU
                 product_ImgUrl: productImgUrl,
                 category_id: categoryId,
             });
-            setIsEditing(false); // Exit editing mode
+    
+            setIsEditing(false); // Exit editing mode after submission
         } catch (error) {
             console.error('Failed to update product:', error.message);
         }
     };
-
-    return(
+    
+    return (
         <div className="col-md-6 col-lg-4 col-xl-3">
             <div className="card h-100">
-            <div className={`card h-100 ${isEditing ? 'border-primary' : ''}`} style={{ transition: '0.3s' }}>
-                <div className="card-body">
-                    <h5 className="card-title text-center">{product.product_name}</h5>
-                    <p className="card-text text-center">{product.product_description}</p>
-                    <p className="card-text"><strong>Price: </strong>${product.product_price}</p>
+                <div className={`card h-100 ${isEditing ? 'border-primary' : ''}`} style={{ transition: '0.3s' }}>
+                    <div className="card-body">
+                        <h5 className="card-title text-center">{product.product_name}</h5>
+                        <p className="card-text text-center">{product.product_description}</p>
+                        <p className="card-text"><strong>Price: </strong>${product.product_price}</p>
 
-                    {isEditing ? (
-                        <EditProductForm
-                            productName={productName}
-                            setProductName={setProductName}
-                            productDescription={productDescription}
-                            setProductDescription={setProductDescription}
-                            productPrice={productPrice}
-                            setProductPrice={setProductPrice}
-                            productImgUrl={productImgUrl}
-                            setProductImgUrl={setProductImgUrl}
-                            categoryId={categoryId}
-                            setCategoryId={setCategoryId}
-                            categories={categories}
-                            handleEditSubmit={handleEditSubmit}
-                            cancelEdit={() => setIsEditing(false)} // Function to cancel editing
-                        />
-                    ) : (
-                        <>
-                            <select
-                                className="form-select mb-2"
-                                value={product.category_id}
-                                onChange={(e) => updateCategory(e.target.value)}
-                            >
-                                {categories.map(category => (
-                                    <option key={category.category_id} value={category.category_id}>
-                                        {category.category_name}
-                                    </option>
-                                ))}
-                            </select>
-                            <button className="btn btn-danger" onClick={handleRemove}>Remove</button>
-                            <button className="btn btn-primary" onClick={() => setIsEditing(true)}>Edit</button>
-                        </>
-                    )}
+                        {isEditing ? (
+                            <EditProductForm
+                                productName={productName}
+                                setProductName={setProductName}
+                                productDescription={productDescription}
+                                setProductDescription={setProductDescription}
+                                productPrice={productPrice}
+                                setProductPrice={setProductPrice}
+                                productImgUrl={productImgUrl}
+                                setProductImgUrl={setProductImgUrl}
+                                categoryId={categoryId}
+                                setCategoryId={setCategoryId}
+                                categories={categories}
+                                handleEditSubmit={handleSubmit}
+                                cancelEdit={() => setIsEditing(false)} // Function to cancel editing
+                            />
+                        ) : (
+                            <>
+                                <select
+                                    className="form-select mb-2"
+                                    value={product.category_id}
+                                    onChange={(e) => updateCategory(e.target.value)}
+                                >
+                                    {categories.map(category => (
+                                        <option key={category.category_id} value={category.category_id}>
+                                            {category.category_name}
+                                        </option>
+                                    ))}
+                                </select>
+                                <button className="btn btn-danger" onClick={handleRemove}>Remove</button>
+                                <button className="btn btn-primary" onClick={() => setIsEditing(true)}>Edit</button>
+                            </>
+                        )}
+                    </div>
                 </div>
-            </div>
             </div>
         </div>
     );

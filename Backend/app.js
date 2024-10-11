@@ -10,7 +10,7 @@ const app = express();
 const APP_PORT = process.env.APP_PORT || 3000;
 
 // Use Helmet for security
-app.use(helmet()); // Must learn what can do.
+app.use(helmet()); // Check out helmet.
 
 // Allow requests from http://localhost:5173
 app.use(cors({

@@ -48,8 +48,8 @@ const UserList = () => {
   if (error) return <p>{error}</p>;
 
   return (
-    <div className="container">
-      <h2 className="h2">User List</h2>
+    <div className="container mt-4">
+      <h2 className="h2 text-center">User List</h2>
       <table className='table'>
         <thead>
           <tr>

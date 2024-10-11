@@ -18,7 +18,9 @@ const AddProduct = ({ onProductAdded, categories }) => {
                 product_ImgUrl: productImgUrl,
                 category_id: categoryId,
             });
-            onProductAdded(newProduct); // Refresh product list
+            if (newProduct) {
+                onProductAdded(newProduct); // Use the returned newProduct
+            }
             setProductName('');
             setProductDescription('');
             setProductPrice('');
@@ -26,7 +28,6 @@ const AddProduct = ({ onProductAdded, categories }) => {
             setCategoryId(categories[0]?.category_id || '');
         } catch (error) {
             console.error('Failed to add product.', error);
-            console.log(categoryId)
         }
     };
 

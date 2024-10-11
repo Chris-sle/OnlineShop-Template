@@ -5,6 +5,7 @@ import Navbar from './components/Layout/Navbar.jsx';
 import HomePage from './pages/HomePage.jsx';
 import ProductsPage from './pages/ProductsPage.jsx';
 import ProductDetail from './components/Products/ProductDetail.jsx';
+import LoginPage from './pages/LoginPage.jsx';
 import AccountPage from './pages/AccountPage.jsx';
 import AdminPage from './pages/AdminPage.jsx';
 import SellerPage from './pages/SellerPage.jsx';
@@ -21,6 +22,7 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/products" element={<ProductsPage />} />
             <Route path="/product/:productId" element={<ProductDetail />} />
+            <Route path="/login" element={<LoginPage />}/>
             <Route path="/Account" element={<AccountPage />} />
             <Route path="/admin" element={<AdminPage />} />
             <Route path="/seller" element={<SellerPage />} />

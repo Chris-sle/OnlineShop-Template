@@ -32,7 +32,8 @@ const SellerPage = () => {
     }, []);
 
     const handleProductAdded = (newProduct) => {
-        setProducts(prevProducts => [newProduct, ...prevProducts]);
+        // Ensure that you are directly using the new product data
+        setProducts(prevProducts => [{ ...newProduct }, ...prevProducts]); // Add new product to front of the list
     };
 
     const handleProductRemoved = (productId) => {

@@ -6,8 +6,7 @@ const LogoutButton = () => {
 
     const handleLogout = () => {
         logout();
-        // Optionally, redirect to a homepage or login page.
-        // e.g. window.location.href = '/login';
+        window.location.href = '/login';
     };
 
     return (
