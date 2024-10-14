@@ -9,6 +9,7 @@ import LoginPage from './pages/LoginPage.jsx';
 import AccountPage from './pages/AccountPage.jsx';
 import AdminPage from './pages/AdminPage.jsx';
 import SellerPage from './pages/SellerPage.jsx';
+import CheckoutPage from './pages/CheckoutPage.jsx';
 import { AuthProvider } from './context/AuthContext';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './app.css';
@@ -26,6 +27,7 @@ function App() {
             <Route path="/Account" element={<AccountPage />} />
             <Route path="/admin" element={<AdminPage />} />
             <Route path="/seller" element={<SellerPage />} />
+            <Route path='/checkout' element={<CheckoutPage />} />
           </Routes>
           <Footer />
       </Router>

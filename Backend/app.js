@@ -25,6 +25,7 @@ const productRoutes = require('./routes/products');
 const categoriesRoutes = require('./routes/categories')
 const adminRoutes = require('./routes/admin');
 const sellerRoutes = require('./routes/seller');
+const cartRoutes = require('./routes/cart');
 
 // Use routes
 app.use('/users', userRoutes);
@@ -32,6 +33,7 @@ app.use('/products', productRoutes);
 app.use('/categories', categoriesRoutes);
 app.use('/admin', adminRoutes);
 app.use('/seller', sellerRoutes);
+app.use('/cart', cartRoutes);
 
 // Error handling middleware
 const errorHandler = require('./middleware/errorHandler');

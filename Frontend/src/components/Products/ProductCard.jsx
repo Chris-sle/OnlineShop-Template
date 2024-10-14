@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import AddToCartButton from '../Cart/AddToCartButton';
 
 const ProductCard = ({ product }) => {
     
@@ -15,9 +16,7 @@ const ProductCard = ({ product }) => {
                     <Link to={`/product/${product.product_id}`} className="btn btn-primary">
                         View Product
                     </Link>
-                    <button className='btn btn-primary bg-danger-subtle'>
-                        Add to cart
-                    </button>
+                    <AddToCartButton productId={product.product_id}/>
                 </div>
             </div>
         </div>

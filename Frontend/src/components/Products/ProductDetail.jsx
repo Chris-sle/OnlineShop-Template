@@ -4,6 +4,7 @@ import { publicFetch } from '../../services/PublicFetch';
 import { AuthContext } from '../../context/AuthContext';
 import ProductReviews from './ProductReviews';
 import AddReview from './AddReview';
+import AddToCartButton from '../Cart/AddToCartButton';
 
 const ProductDetail = () => {
     const { productId } = useParams();
@@ -55,7 +56,7 @@ const ProductDetail = () => {
                     <h1>{product.product_name}</h1>
                     <p>{product.product_description}</p>
                     <p><strong>Price:</strong> ${parseFloat(product.product_price).toFixed(2)}</p>
-                    <button className="btn btn-primary mb-3">Add to cart</button>
+                    <AddToCartButton productId={product.productId}/>
 
 
                 </div>
