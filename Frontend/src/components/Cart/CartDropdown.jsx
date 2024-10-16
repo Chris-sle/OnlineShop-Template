@@ -1,34 +1,52 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { fetchWithToken } from '../../services/fetchWithToken';
 import { Link } from 'react-router-dom';
 import CartItemCard from './CartItemCard';
+import { AuthContext } from '../../context/AuthContext';
+import { setGuestCart, getGuestCart, clearGuestCart } from '../../Utilities/cartUtils';
 
 const CartDropdown = () => {
     const [cartItems, setCartItems] = useState([]);
+    const { token } = useContext(AuthContext);
 
     useEffect(() => {
         const fetchCartItems = async () => {
             try {
-                const items = await fetchWithToken('/cart/items', 'GET');
-                setCartItems(items); // Fetch and set cart items
+                if (token) {
+                    const items = await fetchWithToken('/cart/items', 'GET');
+                    setCartItems(items);
+                } else {
+                    const guestCart = getGuestCart();
+                    setCartItems(guestCart);
+                }
             } catch (error) {
                 console.error('Failed to fetch cart items:', error.message);
             }
         };
 
         fetchCartItems();
-    }, []);
+    }, [token]);
 
     const removeItemFromCart = (productId) => {
-        setCartItems(prevItems => prevItems.filter(item => item.product_id !== productId)); // Update local state
+        setCartItems(prevItems => {
+            const updatedItems = prevItems.filter(item => item.product_id !== productId);
+            if (!token) {
+                setGuestCart(updatedItems);
+            }
+            return updatedItems;
+        });
     };
 
     const updateItemQuantity = (productId, newQuantity) => {
-        setCartItems((prevItems) =>
-            prevItems.map(item =>
+        setCartItems(prevItems => {
+            const updatedItems = prevItems.map(item =>
                 item.product_id === productId ? { ...item, quantity: newQuantity } : item
-            )
-        );
+            );
+            if (!token) {
+                setGuestCart(updatedItems);
+            }
+            return updatedItems;
+        });
     };
 
     return (
@@ -39,15 +57,15 @@ const CartDropdown = () => {
             <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="cartDropdown" style={{ width: '300px' }}>
                 {cartItems.length > 0 ? (
                     cartItems.map(item => (
-                        <CartItemCard 
-                            key={item.product_id} 
-                            item={item} 
-                            onRemove={removeItemFromCart} 
-                            onUpdateQuantity={updateItemQuantity} // Pass update function to CartItemCard
+                        <CartItemCard
+                            key={item.product_id}
+                            item={item}
+                            onRemove={removeItemFromCart}
+                            onUpdateQuantity={updateItemQuantity}
                         />
                     ))
                 ) : (
-                    <li className="dropdown-item">Cart is empty</li> // Show empty message
+                    <li className="dropdown-item">Cart is empty</li>
                 )}
                 <li><hr className="dropdown-divider" /></li>
                 <li>

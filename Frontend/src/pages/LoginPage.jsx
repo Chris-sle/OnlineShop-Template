@@ -5,6 +5,7 @@ import { publicFetch } from '../services/PublicFetch';
 import { useNavigate } from 'react-router-dom'; // For navigation
 import Login from '../components/Authentication/Login';
 import Register from '../components/Authentication/Register';
+import { getGuestCart, clearGuestCart } from '../Utilities/cartUtils'; // Import storage utilities
 
 const LoginPage = () => {
     const { login } = useContext(AuthContext);
@@ -16,10 +17,32 @@ const LoginPage = () => {
         try {
             const data = await fetchWithToken('/users/login', 'POST', { userEmail, userPassword });
             login(data.token); // Store the token using the context function
+            
+            // Step to handle cart items
+            await postCartItemsToBackend(data.token);
+
             navigate('/account'); // Redirect to the AccountPage
         } catch (error) {
             setMessage('Login failed: ' + error.message);
         }
+    };
+
+    // Function to post cart items to the backend
+    const postCartItemsToBackend = async (token) => {
+        const guestCart = getGuestCart(); // Retrieve cart items from local storage
+        
+        for (const item of guestCart) {
+            try {
+                await fetchWithToken('/cart/items', 'POST', {
+                    product_id: item.product_id,
+                    quantity: item.quantity,
+                }, token); // Pass the token and product details
+            } catch (error) {
+                console.error('Failed to post cart item:', error.message);
+            }
+        }
+        
+        clearGuestCart(); // Clear local storage after posting items
     };
 
     // Handle registration logic
@@ -30,7 +53,7 @@ const LoginPage = () => {
 
             if (token) {
                 login(token); // Log the user in
-                history.push('/account'); // Redirect to the AccountPage
+                navigate('/account'); // Redirect to the AccountPage
             } else {
                 setMessage('Registration successful, but no token returned.');
             }

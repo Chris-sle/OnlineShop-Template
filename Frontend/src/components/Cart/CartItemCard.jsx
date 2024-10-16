@@ -1,38 +1,66 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { fetchWithToken } from '../../services/fetchWithToken';
+import { AuthContext } from '../../context/AuthContext';
+import { setGuestCart, getGuestCart } from '../../Utilities/cartUtils';
 
 const CartItemCard = ({ item, onRemove, onUpdateQuantity }) => {
+    const { token } = useContext(AuthContext);
+
     const handleRemove = async () => {
-        try {
-            await fetchWithToken(`/cart/items/${item.product_id}`, 'DELETE');
+        if (token) {
+            try {
+                await fetchWithToken(`/cart/items/${item.product_id}`, 'DELETE');
+                onRemove(item.product_id);
+            } catch (error) {
+                console.error('Failed to remove cart item:', error.message);
+            }
+        } else {
+            const guestCart = getGuestCart();
+            const updatedCart = guestCart.filter(cartItem => cartItem.product_id !== item.product_id);
+            setGuestCart(updatedCart);
             onRemove(item.product_id);
-        } catch (error) {
-            console.error('Failed to remove cart item:', error.message);
         }
     };
 
     const handleIncrease = async () => {
-        // Increase quantity by 1
-        try {
-            const newQuantity = item.quantity + 1;
-            await fetchWithToken(`/cart/items`, 'POST', { product_id: item.product_id, quantity: newQuantity });
-            onUpdateQuantity(item.product_id, newQuantity); // Update the parent component with the new quantity
-        } catch (error) {
-            console.error('Failed to update quantity:', error.message);
+        const newQuantity = item.quantity + 1;
+        
+        if (token) {
+            try {
+                await fetchWithToken(`/cart/items`, 'POST', { product_id: item.product_id, quantity: newQuantity });
+                onUpdateQuantity(item.product_id, newQuantity);
+            } catch (error) {
+                console.error('Failed to update quantity:', error.message);
+            }
+        } else {
+            const guestCart = getGuestCart();
+            const updatedCart = guestCart.map(cartItem =>
+                cartItem.product_id === item.product_id ? { ...cartItem, quantity: newQuantity } : cartItem
+            );
+            setGuestCart(updatedCart);
+            onUpdateQuantity(item.product_id, newQuantity);
         }
     };
 
     const handleDecrease = async () => {
-        // Decrease quantity by 1, but not below 1
         if (item.quantity === 1) {
-            handleRemove(); // Remove item if quantity is 1
+            handleRemove(); 
         } else {
-            try {
-                const newQuantity = item.quantity - 1; // bug where quanity keeps increasing.
-                await fetchWithToken(`/cart/items`, 'POST', { product_id: item.product_id, quantity: newQuantity });
-                onUpdateQuantity(item.product_id, newQuantity); // Update the parent component with the new quantity
-            } catch (error) {
-                console.error('Failed to update quantity:', error.message);
+            const newQuantity = item.quantity - 1;
+            if (token) {
+                try {
+                    await fetchWithToken(`/cart/items`, 'POST', { product_id: item.product_id, quantity: newQuantity });
+                    onUpdateQuantity(item.product_id, newQuantity);
+                } catch (error) {
+                    console.error('Failed to update quantity:', error.message);
+                }
+            } else {
+                const guestCart = getGuestCart();
+                const updatedCart = guestCart.map(cartItem =>
+                    cartItem.product_id === item.product_id ? { ...cartItem, quantity: newQuantity } : cartItem
+                );
+                setGuestCart(updatedCart);
+                onUpdateQuantity(item.product_id, newQuantity);
             }
         }
     };
@@ -44,6 +72,7 @@ const CartItemCard = ({ item, onRemove, onUpdateQuantity }) => {
                 <div className="flex-grow-1">
                     <h6 className="card-title">{item.product_name}</h6>
                     <p className="card-text">Quantity: {item.quantity}</p>
+                    <p className="card-text">Price: ${item.product_price}</p>
                 </div>
                 <div>
                     <button className="btn btn-secondary" onClick={handleDecrease}>-</button>

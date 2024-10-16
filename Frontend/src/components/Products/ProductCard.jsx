@@ -16,7 +16,7 @@ const ProductCard = ({ product }) => {
                     <Link to={`/product/${product.product_id}`} className="btn btn-primary">
                         View Product
                     </Link>
-                    <AddToCartButton productId={product.product_id}/>
+                    <AddToCartButton productId={product.product_id} productInfo={ product }/>
                 </div>
             </div>
         </div>
