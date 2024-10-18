@@ -1,67 +1,26 @@
 import React, { useContext } from 'react';
-import { fetchWithToken } from '../../services/fetchWithToken';
+import { useCart } from '../../context/CartContext';
 import { AuthContext } from '../../context/AuthContext';
-import { setGuestCart, getGuestCart } from '../../Utilities/cartUtils';
 
-const CartItemCard = ({ item, onRemove, onUpdateQuantity }) => {
-    const { token } = useContext(AuthContext);
+const CartItemCard = ({ item }) => {
+    const { token } = useContext(AuthContext); // Assuming useAuth hook provides token
+    const { removeFromCart, updateItemQuantity } = useCart();
 
-    const handleRemove = async () => {
-        if (token) {
-            try {
-                await fetchWithToken(`/cart/items/${item.product_id}`, 'DELETE');
-                onRemove(item.product_id);
-            } catch (error) {
-                console.error('Failed to remove cart item:', error.message);
-            }
-        } else {
-            const guestCart = getGuestCart();
-            const updatedCart = guestCart.filter(cartItem => cartItem.product_id !== item.product_id);
-            setGuestCart(updatedCart);
-            onRemove(item.product_id);
-        }
+    const handleRemove = () => {
+        removeFromCart(item.product_id);  // Use context function to remove item
     };
 
-    const handleIncrease = async () => {
+    const handleIncrease = () => {
         const newQuantity = item.quantity + 1;
-        
-        if (token) {
-            try {
-                await fetchWithToken(`/cart/items`, 'POST', { product_id: item.product_id, quantity: newQuantity });
-                onUpdateQuantity(item.product_id, newQuantity);
-            } catch (error) {
-                console.error('Failed to update quantity:', error.message);
-            }
-        } else {
-            const guestCart = getGuestCart();
-            const updatedCart = guestCart.map(cartItem =>
-                cartItem.product_id === item.product_id ? { ...cartItem, quantity: newQuantity } : cartItem
-            );
-            setGuestCart(updatedCart);
-            onUpdateQuantity(item.product_id, newQuantity);
-        }
+        updateItemQuantity(item.product_id, newQuantity, token);  // Use context function to update quantity
     };
 
-    const handleDecrease = async () => {
-        if (item.quantity === 1) {
-            handleRemove(); 
-        } else {
+    const handleDecrease = () => {
+        if (item.quantity > 1) {
             const newQuantity = item.quantity - 1;
-            if (token) {
-                try {
-                    await fetchWithToken(`/cart/items`, 'POST', { product_id: item.product_id, quantity: newQuantity });
-                    onUpdateQuantity(item.product_id, newQuantity);
-                } catch (error) {
-                    console.error('Failed to update quantity:', error.message);
-                }
-            } else {
-                const guestCart = getGuestCart();
-                const updatedCart = guestCart.map(cartItem =>
-                    cartItem.product_id === item.product_id ? { ...cartItem, quantity: newQuantity } : cartItem
-                );
-                setGuestCart(updatedCart);
-                onUpdateQuantity(item.product_id, newQuantity);
-            }
+            updateItemQuantity(item.product_id, newQuantity, token);  // Use context function to update quantity
+        } else {
+            handleRemove();  // Remove item if quantity reaches 0
         }
     };
 

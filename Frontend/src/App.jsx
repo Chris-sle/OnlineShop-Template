@@ -11,26 +11,29 @@ import AdminPage from './pages/AdminPage.jsx';
 import SellerPage from './pages/SellerPage.jsx';
 import CheckoutPage from './pages/CheckoutPage.jsx';
 import { AuthProvider } from './context/AuthContext';
+import { CartProvider } from './context/CartContext'; // Importing CartProvider
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './app.css';
 
 function App() {
   return (
     <AuthProvider>
-      <Router>
+      <CartProvider> {/* Wrap CartProvider inside AuthProvider */}
+        <Router>
           <Navbar />
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/products" element={<ProductsPage />} />
             <Route path="/product/:productId" element={<ProductDetail />} />
-            <Route path="/login" element={<LoginPage />}/>
-            <Route path="/Account" element={<AccountPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/account" element={<AccountPage />} />
             <Route path="/admin" element={<AdminPage />} />
             <Route path="/seller" element={<SellerPage />} />
             <Route path='/checkout' element={<CheckoutPage />} />
           </Routes>
           <Footer />
-      </Router>
+        </Router>
+      </CartProvider>
     </AuthProvider>
   );
 }

@@ -1,53 +1,21 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { fetchWithToken } from '../../services/fetchWithToken';
+import React, { useContext, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import CartItemCard from './CartItemCard';
 import { AuthContext } from '../../context/AuthContext';
-import { setGuestCart, getGuestCart, clearGuestCart } from '../../Utilities/cartUtils';
+import { useCart } from '../../context/CartContext';
 
 const CartDropdown = () => {
-    const [cartItems, setCartItems] = useState([]);
     const { token } = useContext(AuthContext);
+    const { cartItems, fetchCartItems } = useCart();
 
     useEffect(() => {
-        const fetchCartItems = async () => {
-            try {
-                if (token) {
-                    const items = await fetchWithToken('/cart/items', 'GET');
-                    setCartItems(items);
-                } else {
-                    const guestCart = getGuestCart();
-                    setCartItems(guestCart);
-                }
-            } catch (error) {
-                console.error('Failed to fetch cart items:', error.message);
-            }
-        };
-
-        fetchCartItems();
-    }, [token]);
-
-    const removeItemFromCart = (productId) => {
-        setCartItems(prevItems => {
-            const updatedItems = prevItems.filter(item => item.product_id !== productId);
-            if (!token) {
-                setGuestCart(updatedItems);
-            }
-            return updatedItems;
-        });
-    };
-
-    const updateItemQuantity = (productId, newQuantity) => {
-        setCartItems(prevItems => {
-            const updatedItems = prevItems.map(item =>
-                item.product_id === productId ? { ...item, quantity: newQuantity } : item
-            );
-            if (!token) {
-                setGuestCart(updatedItems);
-            }
-            return updatedItems;
-        });
-    };
+        if (token) {
+            fetchCartItems(token); // Fetch cart items if the user is logged in
+        } else {
+            fetchCartItems()
+            // Optionally handle guest cart fetch logic here if needed
+        }
+    }, [token, fetchCartItems]);
 
     return (
         <li className="nav-item dropdown">
@@ -60,8 +28,8 @@ const CartDropdown = () => {
                         <CartItemCard
                             key={item.product_id}
                             item={item}
-                            onRemove={removeItemFromCart}
-                            onUpdateQuantity={updateItemQuantity}
+                            
+                            
                         />
                     ))
                 ) : (

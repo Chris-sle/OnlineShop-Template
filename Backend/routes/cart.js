@@ -34,10 +34,11 @@ router.post('/items', verifyToken, async (req, res, next) => {
             'SELECT * FROM shopping_cart WHERE user_id = ? AND product_id = ?',
             [userId, product_id]
         );
-        // find out why this keeps increasing quantity.
+
         if (existingItem.length > 0) {
+            // Update the quantity to the new quantity directly
             await db.query(
-                'UPDATE shopping_cart SET quantity = quantity + ?, updated_at = NOW() WHERE user_id = ? AND product_id = ?',
+                'UPDATE shopping_cart SET quantity = ?, updated_at = NOW() WHERE user_id = ? AND product_id = ?',
                 [quantity, userId, product_id]
             );
         } else {
@@ -53,6 +54,7 @@ router.post('/items', verifyToken, async (req, res, next) => {
         next(error);
     }
 });
+
 
 // Remove an item from the cart
 router.delete('/items/:product_id', verifyToken, async (req, res, next) => {
