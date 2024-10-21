@@ -22,12 +22,12 @@ router.post('/register', async (req, res, next) => {
         const createdAt = new Date();
 
         await db.query(
-            'INSERT INTO users (user_id, user_email, user_password, role_id, createdAt) VALUES (?, ?, ?, (SELECT role_id FROM roles WHERE role_name="guest"), ?)',
+            'INSERT INTO users (user_id, user_email, user_password, role_id, createdAt) VALUES (?, ?, ?, (SELECT role_id FROM roles WHERE role_name="customer"), ?)',
             [userId, userEmail, hashedPassword, createdAt]
         );
 
         // Generate a token payload
-        const tokenPayload = { id: userId, email: userEmail, role: 'guest' }; // Set the role as guest for new users
+        const tokenPayload = { id: userId, email: userEmail, role: 'customer' }; // Set the role as guest for new users
         const token = jwt.sign(tokenPayload, process.env.JWT_SECRET, { expiresIn: '1h' });
 
         // Respond with a success message and token

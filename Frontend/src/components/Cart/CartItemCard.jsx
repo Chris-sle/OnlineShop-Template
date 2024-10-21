@@ -7,7 +7,7 @@ const CartItemCard = ({ item }) => {
     const { removeFromCart, updateItemQuantity } = useCart();
 
     const handleRemove = () => {
-        removeFromCart(item.product_id);  // Use context function to remove item
+        removeFromCart(item.product_id, token);  // Use context function to remove item
     };
 
     const handleIncrease = () => {

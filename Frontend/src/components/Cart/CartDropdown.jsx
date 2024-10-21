@@ -10,10 +10,9 @@ const CartDropdown = () => {
 
     useEffect(() => {
         if (token) {
-            fetchCartItems(token); // Fetch cart items if the user is logged in
+            fetchCartItems(token);
         } else {
             fetchCartItems()
-            // Optionally handle guest cart fetch logic here if needed
         }
     }, [token, fetchCartItems]);
 
@@ -28,8 +27,6 @@ const CartDropdown = () => {
                         <CartItemCard
                             key={item.product_id}
                             item={item}
-                            
-                            
                         />
                     ))
                 ) : (

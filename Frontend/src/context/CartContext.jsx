@@ -11,9 +11,9 @@ export const CartProvider = ({ children }) => {
     });
 
     // Calculate total amount using useMemo to optimize performance
-    const totalAmount = useMemo(() => 
-        cartItems.reduce((acc, item) => acc + (item.product_price * item.quantity), 0), 
-    [cartItems]);
+    const totalAmount = useMemo(() =>
+        cartItems.reduce((acc, item) => acc + (item.product_price * item.quantity), 0),
+        [cartItems]);
 
     const fetchCartItems = async (token) => {
         if (token) {
@@ -44,7 +44,7 @@ export const CartProvider = ({ children }) => {
         });
 
         // Update guest cart in local storage
-        const updatedGuestCart = cartItems.map(cartItem => 
+        const updatedGuestCart = cartItems.map(cartItem =>
             cartItem.product_id === item.product_id
                 ? { ...cartItem, quantity: cartItem.quantity + item.quantity }
                 : cartItem
@@ -71,12 +71,21 @@ export const CartProvider = ({ children }) => {
         });
     };
 
-    const removeFromCart = (productId) => {
-        setCartItems(prevItems => {
-            const updatedItems = prevItems.filter(item => item.product_id !== productId);
-            setGuestCart(updatedItems);
-            return updatedItems;
-        });
+    const removeFromCart = async (productId, token) => {
+        if (token) {
+            try {
+                await fetchWithToken(`/cart/items/${productId}`, 'DELETE');
+                setCartItems(prevItems => prevItems.filter(item => item.product_id !== productId));
+            } catch (error) {
+                console.error('Error removing item:', error);
+            }
+        } else {
+            setCartItems(prevItems => {
+                const updatedItems = prevItems.filter(item => item.product_id !== productId);
+                setGuestCart(updatedItems);
+                return updatedItems;
+            });
+        }
     };
 
     return (
