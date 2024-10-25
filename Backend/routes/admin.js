@@ -82,5 +82,49 @@ router.delete('/categories/:categoryId', verifyToken, checkAdmin, async (req, re
     }
 });
 
+// Order Routes:
+// View all orders.
+router.get('/orders', verifyToken, checkAdmin, async (req, res, next) => {
+    try {
+        const [orders] = await db.query(`
+            SELECT 
+                t.transaction_id, 
+                t.total_amount, 
+                t.current_status, 
+                t.createdAt, 
+                u.user_email, 
+                u.user_id,
+                su.user_email AS seller_email
+            FROM transactions t 
+            LEFT JOIN users u ON t.costumer_id = u.user_id
+            LEFT JOIN transactionItems ti ON ti.transaction_id = t.transaction_id
+            LEFT JOIN products p ON p.product_id = ti.product_id
+            LEFT JOIN users su ON p.seller_id = su.user_id
+            ORDER BY t.createdAt DESC
+        `);
+
+        res.status(200).json(orders);
+    } catch (error) {
+        next(error);
+    }
+});
+
+// Delete an order.
+router.delete('/orders/:transaction_id', verifyToken, checkAdmin, async (req, res, next) => {
+    const { transaction_id } = req.params;
+    try {
+        // Ensure transaction items are deleted first because they depend on transactions
+        await db.query('DELETE FROM transactionItems WHERE transaction_id = ?', [transaction_id]);
+
+        // Then delete the transaction itself
+        await db.query('DELETE FROM transactions WHERE transaction_id = ?', [transaction_id]);
+
+        res.status(200).json({ message: 'Order deleted successfully' });
+    } catch (error) {
+        next(error);
+    }
+});
+
+
 // Export module
 module.exports = router;

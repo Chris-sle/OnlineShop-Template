@@ -143,5 +143,59 @@ router.delete('/products/:id', verifyToken, checkSellerOrAdmin, async (req, res,
     }
 });
 
+// Orders for seller
+router.get('/orders/:id', verifyToken, checkSellerOrAdmin, async (req, res, next) => {
+    const { id } = req.params; // Get seller_id from path
+
+    try {
+        const [orders] = await db.query(`
+            SELECT 
+                t.transaction_id, 
+                t.total_amount, 
+                t.current_status, 
+                t.createdAt, 
+                ui.name AS customer_name,
+                u.user_email AS customer_email,  -- Referencing user_email from the users table
+                ua.address,
+                ua.city,
+                ua.zipCode,
+                ua.country,
+                p.product_name,
+                ti.quantity,
+                ti.priceAtPurchase
+            FROM transactions t
+            LEFT JOIN transactionItems ti ON t.transaction_id = ti.transaction_id
+            LEFT JOIN products p ON ti.product_id = p.product_id
+            LEFT JOIN userAddresses ua ON t.costumer_id = ua.user_id
+            LEFT JOIN userInfo ui ON t.costumer_id = ui.user_id  -- Join to get the user's name
+            LEFT JOIN users u ON t.costumer_id = u.user_id  -- Join to get the user's email
+            WHERE p.seller_id = ?
+            ORDER BY t.createdAt DESC
+        `, [id]);
+
+        res.status(200).json(orders);
+    } catch (error) {
+        next(error);
+    }
+});
+
+
+// Route for updating order status
+router.put('/orders/:transaction_id', verifyToken, checkSellerOrAdmin, async (req, res, next) => {
+    const { transaction_id } = req.params;
+    const { newStatus } = req.body;  // Expect newStatus to be passed in the request body
+
+    try {
+        await db.query(
+            'UPDATE transactions SET current_status = ?, updatedAt = NOW() WHERE transaction_id = ?',
+            [newStatus, transaction_id]
+        );
+
+        res.status(200).json({ message: 'Order status updated successfully' });
+    } catch (error) {
+        next(error);
+    }
+});
+
 // Export the router
 module.exports = router;

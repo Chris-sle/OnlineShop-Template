@@ -9,7 +9,7 @@ CREATE TABLE roles (
 CREATE TABLE users(
 	user_id CHAR(36) UNIQUE PRIMARY KEY,
     user_email VARCHAR(50) UNIQUE NOT NULL,
-    user_password VARCHAR(255) NOT NULL,
+    user_password VARCHAR(255) NULL,
     role_id CHAR(36),
     createdAt TIMESTAMP NOT NULL,
     updatedAt TIMESTAMP,
@@ -26,6 +26,17 @@ CREATE TABLE products (
     createdAt TIMESTAMP,
     updatedAt TIMESTAMP,
     FOREIGN KEY (seller_id) REFERENCES users(user_id)
+);
+
+CREATE TABLE shopping_cart (
+    cart_id CHAR(36) UNIQUE PRIMARY KEY,useraddresses
+    user_id CHAR(36),
+    product_id CHAR(36),
+    quantity INT NOT NULL,
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    FOREIGN KEY (product_id) REFERENCES products(product_id)
 );
 
 CREATE TABLE transactions (

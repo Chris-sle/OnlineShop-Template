@@ -15,6 +15,11 @@ export const CartProvider = ({ children }) => {
         cartItems.reduce((acc, item) => acc + (item.product_price * item.quantity), 0),
         [cartItems]);
 
+    const clearCart = () => {
+        setCartItems([]);  // Clear the cart items
+        setGuestCart([]); // Clear the guest cart in local storage
+    };
+
     const fetchCartItems = async (token) => {
         if (token) {
             const items = await fetchWithToken('/cart/items', 'GET');
@@ -89,7 +94,7 @@ export const CartProvider = ({ children }) => {
     };
 
     return (
-        <CartContext.Provider value={{ cartItems, fetchCartItems, addToCart, removeFromCart, updateItemQuantity, totalAmount }}>
+        <CartContext.Provider value={{ cartItems, fetchCartItems, addToCart, removeFromCart, updateItemQuantity, clearCart, totalAmount }}>
             {children}
         </CartContext.Provider>
     );

@@ -1,34 +1,70 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import { AuthContext } from "../../context/AuthContext";
+import { fetchWithToken } from "../../services/fetchWithToken";
 
-const UserInfoForm = ({ userInfo, handleEditSubmit }) => {
-    const [name, setName] = useState(userInfo.name || '');
-    const [dateOfBirth, setDateOfBirth] = useState(userInfo.date_of_birth ? userInfo.date_of_birth.split('T')[0] : '');
-    const [address, setAddress] = useState(userInfo.address || '');
-    const [city, setCity] = useState(userInfo.city || '');
-    const [zipCode, setZipCode] = useState(userInfo.zipCode || '');
-    const [country, setCountry] = useState(userInfo.country || '');
+const UserInfoForm = () => {
+    const { token } = useContext(AuthContext); // Ensure you're accessing the Auth context
+    const [loading, setLoading] = useState(true); // Manage loading state
+    const [error, setError] = useState('');
+
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [dateOfBirth, setDateOfBirth] = useState('');
+    const [address, setAddress] = useState('');
+    const [city, setCity] = useState('');
+    const [zipCode, setZipCode] = useState('');
+    const [country, setCountry] = useState('');
 
     useEffect(() => {
-        // Update fields if userInfo changes (optional)
-        setName(userInfo.name || '');
-        setDateOfBirth(userInfo.date_of_birth ? userInfo.date_of_birth.split('T')[0] : '');
-        setAddress(userInfo.address || '');
-        setCity(userInfo.city || '');
-        setZipCode(userInfo.zipCode || '');
-        setCountry(userInfo.country || '');
-    }, [userInfo]);
+        const fetchUserInfo = async () => {
+            setLoading(true); // Start loading
+            if (token) {
+                try {
+                    const data = await fetchWithToken('/users/userinfo', 'GET');
+                    setName(data.name || '');
+                    setEmail(data.user_email || '');
+                    setDateOfBirth(data.date_of_birth ? data.date_of_birth.split('T')[0] : '');
+                    setAddress(data.address || '');
+                    setCity(data.city || '');
+                    setZipCode(data.zipCode || '');
+                    setCountry(data.country || '');
+                } catch (error) {
+                    setError('Failed to fetch user information.');
+                    console.error(error);
+                } finally {
+                    setLoading(false); // End loading
+                }
+            }
+        };
 
-    const handleFormSubmit = (e) => {
+        fetchUserInfo();
+    }, [token]);
+
+    const handleFormSubmit = async (e) => {
         e.preventDefault(); // Prevent page refresh on form submit
-        handleEditSubmit({ // Pass updated data back to AccountPage
+        const userData = { 
             name,
+            email,
             date_of_birth: dateOfBirth,
             address,
             city,
             zipCode,
-            country,
-        });
+            country
+        };
+
+        try {
+            await fetchWithToken('/users/userinfo', 'PUT', userData); // Send updated info
+            const updatedData = await fetchWithToken('/users/userinfo', 'GET'); // Fetch updated data again
+            setUserInfo(updatedData);
+            alert("User information updated successfully!");
+        } catch (error) {
+            setError('Failed to update user information.');
+            console.error(error);
+        }
     };
+
+    if (loading) return <p>Loading user information...</p>;
+    if (error) return <p className="text-danger">{error}</p>;
 
     return (
         <form onSubmit={handleFormSubmit} className='form'>
@@ -40,6 +76,17 @@ const UserInfoForm = ({ userInfo, handleEditSubmit }) => {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder='Enter your name'
+                    required
+                />
+            </div>
+            <div className='mb-3'>
+                <label className='form-label'>Email</label>
+                <input
+                    type="email"
+                    className='form-control'
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder='Enter your email'
                     required
                 />
             </div>

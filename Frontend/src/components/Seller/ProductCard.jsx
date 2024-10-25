@@ -69,7 +69,7 @@ const ProductCard = ({ product, categories, onProductRemoved, onProductCategoryU
                                 categoryId={categoryId}
                                 setCategoryId={setCategoryId}
                                 categories={categories}
-                                handleEditSubmit={handleSubmit}
+                                handleEditSubmit={handleEditSubmit}
                                 cancelEdit={() => setIsEditing(false)} // Function to cancel editing
                             />
                         ) : (

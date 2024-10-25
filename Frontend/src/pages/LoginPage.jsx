@@ -63,7 +63,7 @@ const LoginPage = () => {
     };
 
     return (
-        <main className='container d-flex justify-content-center align-items-center text-center'>
+        <main className='container d-flex justify-content-center align-items-center text-center flex-grow-1'>
             <div className='row'>
                 <div className='col-md-auto border-end'>
                     <h2 className='h2'>Login</h2>

@@ -10,7 +10,7 @@ const HomePage = () => {
     ];
 
     return (
-        <main className="container mt-4 text-center">
+        <main className="container text-center pt-2">
             <div className="hero mb-4">
                 <img src="https://placeholder.co/800x300?text=Welcome+to+Our+Shop" alt="Shop Hero" className="img-fluid" />
             </div>

@@ -1,12 +1,15 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { AuthContext } from '../../context/AuthContext';
 
-const AccountInfo = ({ userInfo }) => {
+const AccountInfo = () => {
+    const { userEmail } = useContext(AuthContext)
+    
     return (
         <div className='container'>
             <h1>Account Security</h1>
             <ul className="list-group">
                 <li className="list-group-item">
-                    Email: {userInfo.user_email}
+                    Email: {userEmail}
                     <button className="btn btn-link" onClick={() => {/* Logic for editing email */}}>Edit</button>
                 </li>
                 <li className="list-group-item">

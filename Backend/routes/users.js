@@ -27,7 +27,7 @@ router.post('/register', async (req, res, next) => {
         );
 
         // Generate a token payload
-        const tokenPayload = { id: userId, email: userEmail, role: 'customer' }; // Set the role as guest for new users
+        const tokenPayload = { id: userId, email: userEmail, role: 'customer' };
         const token = jwt.sign(tokenPayload, process.env.JWT_SECRET, { expiresIn: '1h' });
 
         // Respond with a success message and token

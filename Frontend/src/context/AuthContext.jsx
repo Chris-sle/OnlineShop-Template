@@ -2,14 +2,13 @@ import React, { createContext, useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
 import { jwtDecode } from 'jwt-decode';
 
-
 // Create the AuthContext
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [token, setToken] = useState(null);
     const [userId, setUserId] = useState(null);
-    const [userEmail, setUserEmail] = useState(null)
+    const [userEmail, setUserEmail] = useState(null);
     const [userRole, setUserRole] = useState(null);
 
     useEffect(() => {
@@ -17,15 +16,13 @@ export const AuthProvider = ({ children }) => {
         const storedToken = Cookies.get('token');
         if (storedToken) {
             try {
-                setToken(storedToken);
                 const decodedToken = jwtDecode(storedToken);
-                setUserId(decodedToken.id); 
+                setToken(storedToken);
+                setUserId(decodedToken.id);
                 setUserEmail(decodedToken.email);
-                setUserRole(decodedToken.role);
-                console.log('Role at mount:', decodedToken.role);
+                setUserRole(decodedToken.role); // Ensure you set the user role correctly
             } catch (error) {
                 console.error('Token decoding failed:', error.message);
-                // Handle the error (e.g. remove the invalid token from cookies)
                 Cookies.remove('token');
             }
         }
@@ -37,9 +34,8 @@ export const AuthProvider = ({ children }) => {
 
         const decodedToken = jwtDecode(token);
         setUserId(decodedToken.id);
-        setUserEmail(decodedToken.email)
+        setUserEmail(decodedToken.email);
         setUserRole(decodedToken.role);
-        console.log('Decoded Token on login:', decodedToken);
     };
 
     const logout = () => {
@@ -51,8 +47,8 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ token, userRole, login, logout }}>
+        <AuthContext.Provider value={{ token, userId, userEmail, userRole, login, logout }}>
             {children}
-        </AuthContext.Provider> 
+        </AuthContext.Provider>
     );
 };

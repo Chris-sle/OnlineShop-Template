@@ -8,7 +8,7 @@ import CartItemCard from '../components/Cart/CartItemCard';
 import CustomerInfoModal from '../components/Checkout/CustomerInfoModal';
 
 const CheckoutPage = () => {
-    const { cartItems, removeFromCart, updateItemQuantity, totalAmount } = useCart();
+    const { cartItems, removeFromCart, updateItemQuantity, clearCart, totalAmount } = useCart();
     const { token, login } = useContext(AuthContext);
 
     const [showModal, setShowModal] = useState(false);
@@ -53,16 +53,15 @@ const CheckoutPage = () => {
             alert("Passwords do not match!");
             return null;
         }
-        try {
-            const response = await publicFetch('/users/register', {
+        try {         
+            // Await the promise from publicFetch
+            const response = await publicFetch({ 
+                URL: '/users/register',
                 method: 'POST',
-                body: JSON.stringify({
-                    email: customerInfo.email,
-                    password: customerInfo.password
-                })
+                data: { userEmail: customerInfo.email, userPassword: customerInfo.password }
             });
-            const data = await response.json();
-            const { token } = data;
+            
+            const { token } = response;  // Expecting the token directly from the response
             if (token) {
                 login(token);  // Update the auth context with the new token
                 return token;
@@ -96,22 +95,24 @@ const CheckoutPage = () => {
                 if (!registeredToken) return;  // handle cases where registration fails
     
                 // User checkout
-                response = await fetchWithToken('/orders/checkout/user', 'POST', JSON.stringify(orderData), registeredToken);
+                response = await fetchWithToken('/checkout/user', 'POST', JSON.stringify(orderData), registeredToken);
             } else if (token) {
                 // For logged-in users
-                response = await fetchWithToken('/orders/checkout/user', 'POST', JSON.stringify(orderData), token);
+                response = await fetchWithToken('/checkout/user', 'POST', JSON.stringify(orderData), token);
             } else {
                 // For guest users
-                response = await publicFetch('/checkout/guest', {
+                response = await publicFetch({
+                    URL: '/checkout/guest',
                     method: 'POST',
-                    body: JSON.stringify(orderData),
+                    data: JSON.stringify(orderData),
                 });
             }
     
-            const data = await response.json();
-            alert(data.message);
+            alert(response.message);
+            clearCart();
             setShowModal(false);
         } catch (error) {
+            console.error('Order submission failed:', error);
             alert(`Order submission failed: ${error.message}`);
         }
     };
@@ -125,7 +126,7 @@ const CheckoutPage = () => {
     };
 
     return (
-        <main className="container mt-4">
+        <main className="container">
             <h1 className="text-center">Checkout</h1>
             <div className="row">
                 <div className="col-md-8">

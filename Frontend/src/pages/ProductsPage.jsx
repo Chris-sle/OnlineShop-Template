@@ -38,8 +38,7 @@ const ProductsPage = () => {
     if (error) return <p>{error}</p>;
 
     return (
-        <main className='container mt-4'>
-            <h1 className='h1 text-center'>Product Page</h1>
+        <main className='container mb-2'>
             <CategoryFilter 
                 categories={categories}
                 selectedCategory={selectedCategory}
