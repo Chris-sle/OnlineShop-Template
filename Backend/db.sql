@@ -45,6 +45,7 @@ CREATE TABLE transactions (
     total_amount DECIMAL(10,2) NOT NULL,
     current_status ENUM('Pending', 'Completed', 'Cancelled') NOT NULL,
     createdAt TIMESTAMP,
+    updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (costumer_id) REFERENCES users(user_id)
 );
 

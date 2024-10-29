@@ -22,11 +22,11 @@ app.use(express.json());
 // Import routes
 const userRoutes = require('./routes/users');
 const productRoutes = require('./routes/products');
-const categoriesRoutes = require('./routes/categories')
+const categoriesRoutes = require('./routes/categories');
 const adminRoutes = require('./routes/admin');
 const sellerRoutes = require('./routes/seller');
 const cartRoutes = require('./routes/cart');
-const checkoutRoutes = require('./routes/checkout')
+const checkoutRoutes = require('./routes/checkout');
 const orderRoutes = require('./routes/orders');
 
 // Use routes
@@ -36,7 +36,7 @@ app.use('/categories', categoriesRoutes);
 app.use('/admin', adminRoutes);
 app.use('/seller', sellerRoutes);
 app.use('/cart', cartRoutes);
-app.use('/checkout', checkoutRoutes)
+app.use('/checkout', checkoutRoutes);
 app.use('/orders', orderRoutes);
 
 // Error handling middleware

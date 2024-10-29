@@ -12,6 +12,6 @@ main {
 
 @media (max-width: 992px) {
     main {
-        margin-top: 100px; /* Adjust for when the navbar is expanded */
+        margin-top: 100px;
     }
 }

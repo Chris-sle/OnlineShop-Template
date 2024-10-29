@@ -150,27 +150,43 @@ router.get('/orders/:id', verifyToken, checkSellerOrAdmin, async (req, res, next
     try {
         const [orders] = await db.query(`
             SELECT 
-                t.transaction_id, 
-                t.total_amount, 
-                t.current_status, 
-                t.createdAt, 
+                t.transaction_id,
+                t.current_status,
+                t.total_amount,
+                t.createdAt,
+                u.user_email AS customer_email,
                 ui.name AS customer_name,
-                u.user_email AS customer_email,  -- Referencing user_email from the users table
                 ua.address,
                 ua.city,
                 ua.zipCode,
                 ua.country,
-                p.product_name,
-                ti.quantity,
-                ti.priceAtPurchase
-            FROM transactions t
-            LEFT JOIN transactionItems ti ON t.transaction_id = ti.transaction_id
-            LEFT JOIN products p ON ti.product_id = p.product_id
-            LEFT JOIN userAddresses ua ON t.costumer_id = ua.user_id
-            LEFT JOIN userInfo ui ON t.costumer_id = ui.user_id  -- Join to get the user's name
-            LEFT JOIN users u ON t.costumer_id = u.user_id  -- Join to get the user's email
-            WHERE p.seller_id = ?
-            ORDER BY t.createdAt DESC
+                p.seller_id,
+                JSON_ARRAYAGG(
+                    JSON_OBJECT(
+                        'product_name', p.product_name,
+                        'quantity', ti.quantity,
+                        'priceAtPurchase', ti.priceAtPurchase
+                    )
+                ) AS products
+            FROM 
+                transactions t
+            JOIN 
+                transactionItems ti ON t.transaction_id = ti.transaction_id
+            JOIN 
+                products p ON ti.product_id = p.product_id
+            JOIN 
+                users u ON t.costumer_id = u.user_id
+            JOIN 
+                userInfo ui ON u.user_id = ui.user_id
+            JOIN 
+                userAddresses ua ON u.user_id = ua.user_id
+            WHERE 
+                p.seller_id = ?
+            GROUP BY 
+                t.transaction_id, t.current_status,
+                t.total_amount, t.createdAt,
+                u.user_email, ui.name,
+                ua.address, ua.city, ua.zipCode, ua.country, p.seller_id;
         `, [id]);
 
         res.status(200).json(orders);

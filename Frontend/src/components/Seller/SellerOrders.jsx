@@ -11,8 +11,7 @@ const SellerOrders = () => {
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                const sellerId = userId;
-                const ordersData = await fetchWithToken(`/seller/orders/${sellerId}`, 'GET');
+                const ordersData = await fetchWithToken(`/seller/orders/${userId}`, 'GET');
                 console.log(ordersData);
                 setOrders(ordersData);
             } catch (error) {
@@ -42,43 +41,43 @@ const SellerOrders = () => {
     return (
         <div className="container mt-4">
             <h2>Manage Your Orders</h2>
-            <table className="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Order ID</th>
-                        <th>Customer Name</th>
-                        <th>Customer Email</th>
-                        <th>Total Amount</th>
-                        <th>Status</th>
-                        <th>Created At</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {orders.map(order => (
-                        <tr key={order.transaction_id}>
-                            <td>{order.transaction_id}</td>
-                            <td>{order.customer_name}</td>
-                            <td>{order.customer_email}</td>
-                            <td>${parseFloat(order.total_amount).toFixed(2)}</td>
-                            <td>{order.current_status}</td>
-                            <td>{new Date(order.createdAt).toLocaleString()}</td>
-                            <td>
-                                <button 
-                                    className="btn btn-info" 
-                                    onClick={() => updateOrderStatus(order.transaction_id, 'Completed')}>
-                                    Mark as Completed
-                                </button>
-                                <button 
-                                    className="btn btn-warning" 
-                                    onClick={() => updateOrderStatus(order.transaction_id, 'Cancelled')}>
-                                    Cancel
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+            {orders.map(order => (
+                <div key={order.transaction_id} className="card mb-4">
+                    <div className="card-header">
+                        <h5>Order ID: {order.transaction_id}</h5>
+                        <p>Status: {order.current_status}</p>
+                        <p>Total Amount: ${parseFloat(order.total_amount).toFixed(2)}</p>
+                    </div>
+                    <div className="card-body">
+                        <h5 className="card-title">Customer Information</h5>
+                        <p>Name: {order.customer_name}</p>
+                        <p>Email: {order.customer_email}</p>
+                        <p>Address: {order.address}, {order.city}, {order.zipCode}, {order.country}</p>
+                        <h5 className="card-title mt-3">Products in Order</h5>
+                        <ul className="list-group list-group-flush">
+                            {order.products.map((product, index) => (
+                                <li key={index} className="list-group-item">
+                                    {product.product_name} - Quantity: {product.quantity}
+                                    <br />
+                                    Price: ${parseFloat(product.priceAtPurchase).toFixed(2)}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                    <div className="card-footer">
+                        <button 
+                            className="btn btn-info me-2" 
+                            onClick={() => updateOrderStatus(order.transaction_id, 'Completed')}>
+                            Mark as Completed
+                        </button>
+                        <button 
+                            className="btn btn-warning" 
+                            onClick={() => updateOrderStatus(order.transaction_id, 'Cancelled')}>
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            ))}
         </div>
     );
 };

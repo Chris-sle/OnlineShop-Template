@@ -5,7 +5,7 @@ const AddToCartButton = ({ productInfo }) => {
     const { addToCart } = useCart();
 
     const handleAddToCart = () => {
-        addToCart({ ...productInfo, quantity: 1 }); // Or use a state for quantity if needed
+        addToCart({ ...productInfo, quantity: 1 });
     };
 
     return (
