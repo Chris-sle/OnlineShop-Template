@@ -1,7 +1,3 @@
-Here’s a combined README for the entire e-commerce web application, encompassing both the backend and frontend components:
-
----
-
 # E-commerce Web Application
 
 This project is a full-stack e-commerce web application built with Node.js, Express, MySQL for the backend, and React.js for the frontend. The application provides a comprehensive platform for users to browse products, manage their shopping carts, and perform user management activities, including authentication and role-based access.
